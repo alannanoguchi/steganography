@@ -16,7 +16,7 @@ An image consists of several pixels, each pixel contains three values (which are
 
 """
 # TODO: Run `pip3 install Pillow` before running the code.
-from PIL import Image
+from PIL import Image, ImageDraw, ImageChops
 
 
 def decode_image(path_to_png):
@@ -48,15 +48,38 @@ def decode_image(path_to_png):
     decoded_image.save("decoded_image.png")
 
 
-def encode_image(path_to_png):
+def encode_image(path_to_png, text_to_write):
     """
-    TODO: Add docstring and complete implementation.
-    """
-    pass
+    write_text() will take a string and convert it to a black and white image of the string. You may use it as a helper function in completing your implementation of encode_image(). https://pillow.readthedocs.io/en/stable/reference/ImageDraw.html?highlight=multiline_text#PIL.ImageDraw.ImageDraw.multiline_text
 
+    PIL.Image.new(mode, size, color=0) --> color for image is black by default 
+    Creates a new image with the given mode (mode we are using is RGB) and size. https://pillow.readthedocs.io/en/stable/reference/Image.html
 
-def write_text(text_to_write):
+    The ImageDraw module provides simple 2D graphics for Image objects. You can use this module to create new images, annotate or retouch existing images, and to generate graphics on the fly for web use. https://pillow.readthedocs.io/en/stable/reference/ImageDraw.html
     """
-    TODO: Add docstring and complete implementation.
-    """
-    pass
+
+    '''
+    open image, create new image, draw on the image to write the text, *very important: change image color to black (see nested for loop), combine the images, then save
+    '''
+    # Open the image::
+    image = Image.open(path_to_png).convert('RGB')   # convert opened image to RGB first
+    image_with_msg = Image.new('RGB', image.size, color=0) # creates a new image in the color black
+    draw = ImageDraw.Draw(image_with_msg)      
+
+    # draw multiline text
+    draw.multiline_text((10,10), "Can you read this message?\nIf so, good job!", fill=(1, 0, 0))
+    # image_with_msg.save('test.png')
+
+    pixels = image.load()
+    x_size, y_size = image.size
+
+    for i in range(x_size):      # iterate through the x_size
+        for j in range(y_size):     # and iterate through the y_size 
+            if pixels[i,j][0] % 2:    # returns odd numbers
+                pixel = pixels[i,j]
+                pixels[i,j] = (pixel[0] - 1, pixel[1], pixel[2]) 
+                            
+
+    encoded_img = ImageChops.add(image, image_with_msg)
+    encoded_img.save('encoded_img.png')
+

@@ -6,3 +6,4 @@ encoded_image = Image.open("encoded_sample.png")
 decoded_image = Image.new("RGB", encoded_image.size)
 pixels = encoded_image.load()
 x_size, y_size = encoded_image.size
+
